@@ -1,18 +1,42 @@
 [
   {
     "title": "Morning Stretch",
-    "description": "After Fajr, perform a 5-10 minute stretching routine to wake up your body and improve circulation."
+    "duration": "10 mins",
+    "icon": "🌅",
+    "description": "A gentle full-body stretch to wake up after Fajr. Helps with blood flow without breaking your fast.",
+    "exercises": ["Neck rolls x10", "Shoulder circles x10", "Cat-cow stretch x10", "Child's pose — hold 30s", "Standing forward fold — hold 30s"],
+    "tip": "Do this after Fajr prayer before sitting down. Even 5 minutes makes a difference."
   },
   {
-    "title": "Evening Walk",
-    "description": "After Maghrib, take a 15-20 minute light walk to aid digestion and maintain energy levels."
+    "title": "Pre-Iftar Walk",
+    "duration": "20–30 mins",
+    "icon": "🚶",
+    "description": "A light walk 1–2 hours before iftar. Low intensity keeps energy stable and aids digestion after you break fast.",
+    "exercises": ["Brisk walk outdoors", "Maintain steady breathing", "Use this time for dhikr or listening to Quran"],
+    "tip": "Avoid walking in peak afternoon heat. Early evening is ideal."
   },
   {
-    "title": "Short Bodyweight Exercises",
-    "description": "Do squats, push-ups, and planks for 10-15 minutes during non-fasting hours to stay active."
+    "title": "Post-Iftar Strength",
+    "duration": "25–35 mins",
+    "icon": "💪",
+    "description": "Wait 60–90 minutes after iftar before starting. Bodyweight exercises that build strength without equipment.",
+    "exercises": ["Push-ups 3×12", "Bodyweight squats 3×15", "Lunges 3×10 each leg", "Plank 3×30s", "Glute bridges 3×15"],
+    "tip": "Hydrate well between iftar and suhoor. Aim for 8 glasses of water across the non-fasting hours."
   },
   {
-    "title": "Deep Breathing & Relaxation",
-    "description": "Practice deep breathing or meditation for 5 minutes to reduce stress and stay focused during fasting."
+    "title": "Taraweeh Active Rest",
+    "duration": "During Taraweeh",
+    "icon": "🕌",
+    "description": "Taraweeh itself is physical worship. Standing, bowing, and prostrating repeatedly engages your core, legs, and back.",
+    "exercises": ["Focus on proper posture in each position", "Engage core during qiyam (standing)", "Full knee bend in ruku'", "Mindful placement in sujood"],
+    "tip": "Consider Taraweeh your evening movement. You don't always need a separate workout on these nights."
+  },
+  {
+    "title": "Suhoor Yoga",
+    "duration": "10–15 mins",
+    "icon": "🧘",
+    "description": "Gentle movement after suhoor to aid digestion and prepare your body for the fast. Nothing intense.",
+    "exercises": ["Seated spinal twist — 30s each side", "Supine knees-to-chest — 30s", "Legs up the wall — 2 mins", "Deep breathing — 2 mins"],
+    "tip": "Never do intense cardio right after suhoor. Keep it slow and restorative."
   }
 ]
