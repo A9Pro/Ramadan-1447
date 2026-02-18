@@ -2,24 +2,36 @@
 import recitations from "./recitations.json";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Volume2, VolumeX, Square, Play } from "lucide-react";
+import { Volume2, Square, Play, Mic } from "lucide-react";
 
 export default function SideRecitationsPanel() {
   const [selected, setSelected] = useState(recitations[0]);
   const [direction, setDirection] = useState(1);
   const [speaking, setSpeaking] = useState(false);
-  const [supported] = useState(() => "speechSynthesis" in window);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [speechSupported] = useState(() => "speechSynthesis" in window);
+  const audioRef = useRef(null);
   const utteranceRef = useRef(null);
 
-  // Stop speech when changing recitation
   useEffect(() => {
-    stopSpeaking();
+    stopAll();
   }, [selected]);
 
-  // Cleanup on unmount
   useEffect(() => {
-    return () => stopSpeaking();
+    return () => stopAll();
   }, []);
+
+  const stopAll = () => {
+    // Stop speech
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    setSpeaking(false);
+    // Stop audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setAudioPlaying(false);
+  };
 
   const handleSelect = (r) => {
     const newIndex = recitations.indexOf(r);
@@ -28,99 +40,124 @@ export default function SideRecitationsPanel() {
     setSelected(r);
   };
 
-  const stopSpeaking = () => {
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
+  // For Ayat al-Kursi — play real Mishary audio
+  const playAudio = () => {
+    if (audioPlaying) {
+      stopAll();
+      return;
     }
-    setSpeaking(false);
+    if (!audioRef.current) return;
+    audioRef.current.play();
+    setAudioPlaying(true);
+    audioRef.current.onended = () => setAudioPlaying(false);
   };
 
-  const speak = () => {
-    if (!supported) return;
+  // For others — use Arabic Web Speech
+  const speakArabic = () => {
+    if (!speechSupported) return;
     if (speaking) {
-      stopSpeaking();
+      stopAll();
       return;
     }
 
-    // Build text to speak: transliteration if available, else text
-    const textToSpeak = selected.transliteration || selected.text || selected.arabic || "";
-    if (!textToSpeak) return;
+    const text = selected.arabic || selected.transliteration || selected.text;
+    if (!text) return;
 
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    window.speechSynthesis.cancel();
 
-    // Try to find an Arabic voice for arabic text, else default
-    const voices = window.speechSynthesis.getVoices();
-    const arabicVoice = voices.find(
-      (v) => v.lang.startsWith("ar") || v.name.toLowerCase().includes("arabic")
-    );
+    // Wait for voices to load
+    const doSpeak = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const arabicVoice =
+        voices.find((v) => v.lang === "ar-SA") ||
+        voices.find((v) => v.lang.startsWith("ar")) ||
+        voices.find((v) => v.name.toLowerCase().includes("arabic"));
 
-    if (selected.arabic && arabicVoice) {
-      // Speak Arabic text with arabic voice
-      utterance.text = selected.arabic;
-      utterance.voice = arabicVoice;
+      const utterance = new SpeechSynthesisUtterance(selected.arabic || text);
       utterance.lang = "ar-SA";
-    } else {
-      // Speak transliteration/english
-      utterance.lang = "en-US";
-      utterance.rate = 0.85;
+      utterance.rate = 0.75;
       utterance.pitch = 1;
+      if (arabicVoice) utterance.voice = arabicVoice;
+
+      utterance.onstart = () => setSpeaking(true);
+      utterance.onend = () => setSpeaking(false);
+      utterance.onerror = () => setSpeaking(false);
+
+      utteranceRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    };
+
+    // Voices might not be loaded yet
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = doSpeak;
+    } else {
+      doSpeak();
     }
-
-    utterance.onstart = () => setSpeaking(true);
-    utterance.onend = () => setSpeaking(false);
-    utterance.onerror = () => setSpeaking(false);
-
-    utteranceRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
   };
+
+  const isActive = speaking || audioPlaying;
+  const hasRealAudio = !!selected.audio;
 
   return (
     <div>
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h2 className="text-2xl font-semibold text-amber-400">
-            Side Recitations
-          </h2>
+          <h2 className="text-2xl font-semibold text-amber-400">Side Recitations</h2>
           <p className="text-sm mt-1 opacity-40">Daily adhkar & supplications</p>
         </div>
 
-        {/* Voice button */}
-        {supported && (
-          <motion.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.93 }}
-            onClick={speak}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
-              speaking
-                ? "border-amber-400/50 bg-amber-400/15 text-amber-400"
-                : "border-white/10 opacity-50 hover:opacity-80"
-            }`}
-          >
-            {speaking ? (
-              <>
-                <motion.div
-                  animate={{ scale: [1, 1.3, 1] }}
-                  transition={{ repeat: Infinity, duration: 0.8 }}
-                >
-                  <Square size={12} className="fill-current" />
-                </motion.div>
-                Stop
-              </>
-            ) : (
-              <>
-                <Volume2 size={13} />
-                Listen
-              </>
-            )}
-          </motion.button>
-        )}
+        {/* Listen button */}
+        <motion.button
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.93 }}
+          onClick={hasRealAudio ? playAudio : speakArabic}
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
+            isActive
+              ? "border-amber-400/50 bg-amber-400/15 text-amber-400"
+              : "border-white/10 opacity-50 hover:opacity-80"
+          }`}
+        >
+          {isActive ? (
+            <>
+              <motion.div animate={{ scale: [1, 1.4, 1] }} transition={{ repeat: Infinity, duration: 0.7 }}>
+                <Square size={11} className="fill-current" />
+              </motion.div>
+              Stop
+            </>
+          ) : (
+            <>
+              <Volume2 size={13} />
+              {hasRealAudio ? "Al-Afasy" : "Listen"}
+            </>
+          )}
+        </motion.button>
       </div>
+
+      {/* Reciter badge for Ayat al-Kursi */}
+      <AnimatePresence>
+        {selected.reciter && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            className="flex items-center gap-2 mb-4 px-3 py-1.5 rounded-xl border border-amber-400/20 bg-amber-400/8 w-fit"
+          >
+            <Mic size={11} className="text-amber-400" />
+            <span className="text-xs text-amber-400/70">{selected.reciter}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Hidden audio element for Mishary tracks */}
+      {selected.audio && (
+        <audio ref={audioRef} src={selected.audio} preload="none" />
+      )}
 
       {/* Tab Pills */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none mb-5">
         {recitations.map((r, idx) => {
-          const isActive = selected.name === r.name;
+          const isSelected = selected.name === r.name;
           return (
             <motion.button
               key={idx}
@@ -128,13 +165,16 @@ export default function SideRecitationsPanel() {
               whileTap={{ scale: 0.97 }}
               onClick={() => handleSelect(r)}
               className={`relative flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
-                isActive
+                isSelected
                   ? "border-amber-400/40 bg-amber-400/10 text-amber-400"
                   : "border-white/8 opacity-40 hover:opacity-70"
               }`}
             >
               {r.name}
-              {isActive && (
+              {r.audio && (
+                <span className="ml-1 text-amber-400/50 text-xs">♪</span>
+              )}
+              {isSelected && (
                 <motion.div
                   layoutId="recitation-pill"
                   className="absolute inset-0 rounded-xl border border-amber-400/30"
@@ -146,24 +186,30 @@ export default function SideRecitationsPanel() {
         })}
       </div>
 
-      {/* Content Card */}
-      <div className="relative overflow-hidden rounded-2xl border border-white/8 bg-white/3 min-h-[140px]">
-        {/* Speaking waveform indicator */}
+      {/* Content */}
+      <div className="relative overflow-hidden rounded-2xl border border-white/8 bg-white/3 min-h-[160px]">
+
+        {/* Waveform while playing */}
         <AnimatePresence>
-          {speaking && (
+          {isActive && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute top-3 right-3 flex items-center gap-0.5"
+              className="absolute top-3 right-3 flex items-end gap-0.5 h-4"
             >
-              {[1, 2, 3, 4, 3].map((h, i) => (
+              {[2, 4, 3, 5, 2, 4, 3].map((h, i) => (
                 <motion.div
                   key={i}
-                  animate={{ scaleY: [1, h, 1] }}
-                  transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1, ease: "easeInOut" }}
-                  className="w-0.5 bg-amber-400 rounded-full origin-bottom"
-                  style={{ height: 12 }}
+                  animate={{ scaleY: [0.3, 1, 0.3] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 0.7 + i * 0.05,
+                    delay: i * 0.08,
+                    ease: "easeInOut",
+                  }}
+                  className="w-0.5 rounded-full bg-amber-400 origin-bottom"
+                  style={{ height: h * 3 }}
                 />
               ))}
             </motion.div>
@@ -180,43 +226,38 @@ export default function SideRecitationsPanel() {
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="p-5 space-y-3"
           >
-            <h3 className="font-semibold text-base opacity-90">{selected.name}</h3>
+            <h3 className="font-semibold text-sm opacity-60 uppercase tracking-wider">
+              {selected.name}
+            </h3>
 
             {selected.arabic && (
-              <p
-                dir="rtl"
-                className="text-right text-xl leading-loose opacity-80 font-arabic"
-              >
+              <p dir="rtl" className="text-right text-xl leading-loose opacity-85 font-arabic">
                 {selected.arabic}
               </p>
             )}
 
-            <p className="text-sm leading-relaxed opacity-55">{selected.text}</p>
+            <p className="text-sm leading-relaxed opacity-50">{selected.text}</p>
 
             {selected.transliteration && (
-              <p className="text-xs italic opacity-35">{selected.transliteration}</p>
+              <p className="text-xs italic opacity-30 leading-relaxed">
+                {selected.transliteration}
+              </p>
             )}
 
-            {/* Audio file fallback */}
-            {selected.audio && (
-              <div className="pt-2 flex items-center gap-3">
-                <Volume2 size={13} className="opacity-30 flex-shrink-0" />
-                <audio
-                  controls
-                  src={selected.audio}
-                  className="w-full h-8 opacity-60 hover:opacity-90 transition-opacity"
-                />
+            {selected.note && (
+              <div className="mt-3 px-3 py-2 rounded-xl border border-amber-400/15 bg-amber-400/5">
+                <p className="text-xs opacity-50 leading-relaxed">📖 {selected.note}</p>
               </div>
             )}
 
-            {/* Voice recitation hint */}
-            {!selected.audio && supported && !speaking && (
+            {/* Tap hint */}
+            {!isActive && (
               <button
-                onClick={speak}
-                className="flex items-center gap-1.5 text-xs text-amber-400/50 hover:text-amber-400/80 transition-colors mt-1"
+                onClick={hasRealAudio ? playAudio : speakArabic}
+                className="flex items-center gap-1.5 text-xs text-amber-400/40 hover:text-amber-400/70 transition-colors"
               >
-                <Play size={11} />
-                Tap "Listen" to hear this recitation
+                <Play size={10} />
+                {hasRealAudio ? "Play Mishary Al-Afasy recitation" : "Listen in Arabic"}
               </button>
             )}
           </motion.div>

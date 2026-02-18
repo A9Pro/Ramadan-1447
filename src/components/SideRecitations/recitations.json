@@ -4,41 +4,48 @@
     "arabic": "التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
     "transliteration": "At-tahiyyatu lillahi was-salawatu wat-tayyibatu. As-salamu 'alayka ayyuhan-nabiyyu wa rahmatullahi wa barakatuh. As-salamu 'alayna wa 'ala 'ibadillahis-salihin. Ash-hadu an la ilaha illallahu wa ash-hadu anna Muhammadan 'abduhu wa rasuluh.",
     "text": "All greetings, prayers and goodness belong to Allah. Peace be upon you, O Prophet, and the mercy of Allah and His blessings. Peace be upon us and upon the righteous servants of Allah. I bear witness that there is no god but Allah, and I bear witness that Muhammad is His servant and messenger.",
-    "note": "Recited in the sitting position (Tashahhud) during every Salah."
+    "note": "Recited in the sitting position (Tashahhud) during every Salah.",
+    "speakArabic": true
   },
   {
     "name": "Ayat al-Kursi",
     "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
     "transliteration": "Allahu la ilaha illa Huwal-Hayyul-Qayyum. La ta'khudhuhu sinatun wa la nawm. Lahu ma fis-samawati wa ma fil-ard. Man dhal-ladhi yashfa'u 'indahu illa bi-idhnih. Ya'lamu ma bayna aydihim wa ma khalfahum. Wa la yuhituna bi shay'im-min 'ilmihi illa bima sha'. Wasi'a kursiyyuhus-samawati wal-ard. Wa la ya'uduhu hifdhuhuma. Wa Huwal-'Aliyyul-'Adhim.",
-    "text": "Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
-    "note": "Surah Al-Baqarah 2:255. Whoever recites it after every obligatory prayer, nothing will prevent him from entering Paradise. (Hadith — An-Nasa'i)"
+    "text": "Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth...",
+    "note": "Surah Al-Baqarah 2:255. Whoever recites it after every obligatory prayer, nothing will prevent him from entering Paradise.",
+    "audio": "https://cdn.islamic.network/quran/audio/128/ar.alafasy/255.mp3",
+    "reciter": "Mishary Rashid Al-Afasy"
   },
   {
     "name": "Dua after Salah",
-    "arabic": "أَسْتَغْفِرُ اللَّهَ (×٣) اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ. سُبْحَانَ اللَّهِ (×٣٣) الْحَمْدُ لِلَّهِ (×٣٣) اللَّهُ أَكْبَرُ (×٣٤) لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
-    "transliteration": "Astaghfirullah (×3). Allahumma antas-salam wa minkas-salam, tabarakta ya dhal-jalali wal-ikram. SubhanAllah (×33). Alhamdulillah (×33). Allahu Akbar (×34). La ilaha illallahu wahdahu la sharika lah, lahul-mulku wa lahul-hamdu wa huwa 'ala kulli shay'in qadir.",
-    "text": "I seek forgiveness from Allah (×3). O Allah, You are Peace and from You comes peace. Blessed are You, O Possessor of Glory and Honour. Glory be to Allah (×33). All praise be to Allah (×33). Allah is the Greatest (×34). There is no deity except Allah, alone, without partner. To Him belongs all dominion and all praise, and He is over all things capable.",
-    "note": "Sunnah adhkar after every Fard (obligatory) prayer. Narrated by Muslim."
+    "arabic": "أَسْتَغْفِرُ اللَّهَ (×٣) اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ. سُبْحَانَ اللَّهِ (×٣٣) الْحَمْدُ لِلَّهِ (×٣٣) اللَّهُ أَكْبَرُ (×٣٤)",
+    "transliteration": "Astaghfirullah (×3). Allahumma antas-salam wa minkas-salam, tabarakta ya dhal-jalali wal-ikram. SubhanAllah (×33). Alhamdulillah (×33). Allahu Akbar (×34).",
+    "text": "I seek forgiveness from Allah (×3). O Allah, You are Peace and from You comes peace. Blessed are You, O Possessor of Glory and Honour. Glory be to Allah (×33). All praise be to Allah (×33). Allah is the Greatest (×34).",
+    "note": "Sunnah adhkar after every Fard prayer. Narrated by Muslim.",
+    "speakArabic": true
   },
   {
     "name": "Subhanallah",
     "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ",
     "transliteration": "SubhanAllahi wa bihamdihi. SubhanAllahil-'Adhim.",
     "text": "Glory be to Allah and praise Him. Glory be to Allah the Most Great.",
-    "note": "Two phrases beloved to Allah, light on the tongue, heavy on the scale. (Bukhari & Muslim)"
+    "note": "Two phrases beloved to Allah, light on the tongue, heavy on the scale. (Bukhari & Muslim)",
+    "speakArabic": true
   },
   {
     "name": "Istighfar",
     "arabic": "أَسْتَغْفِرُ اللَّهَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ",
     "transliteration": "Astaghfirullaha alladhi la ilaha illa Huwal-Hayyul-Qayyumu wa atubu ilayh.",
     "text": "I seek forgiveness from Allah, besides whom there is no god, the Ever-Living, the Sustainer, and I repent to Him.",
-    "note": "Whoever says this, Allah will forgive him even if he has fled from battle. (Abu Dawud, Tirmidhi)"
+    "note": "Whoever says this, Allah will forgive him even if he has fled from battle. (Abu Dawud, Tirmidhi)",
+    "speakArabic": true
   },
   {
     "name": "Salawat",
-    "arabic": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ. اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
-    "transliteration": "Allahumma salli 'ala Muhammadin wa 'ala ali Muhammadin kama sallayta 'ala Ibrahima wa 'ala ali Ibrahim. Innaka Hamidun Majid. Allahumma barik 'ala Muhammadin wa 'ala ali Muhammadin kama barakta 'ala Ibrahima wa 'ala ali Ibrahim. Innaka Hamidun Majid.",
-    "text": "O Allah, send prayers upon Muhammad and upon the family of Muhammad, as You sent prayers upon Ibrahim and upon the family of Ibrahim. Indeed, You are Praiseworthy and Glorious. O Allah, bless Muhammad and the family of Muhammad, as You blessed Ibrahim and the family of Ibrahim. Indeed, You are Praiseworthy and Glorious.",
-    "note": "The Ibrahimiyyah Salawat — recited in the final Tashahhud of every prayer."
+    "arabic": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
+    "transliteration": "Allahumma salli 'ala Muhammadin wa 'ala ali Muhammadin kama sallayta 'ala Ibrahima wa 'ala ali Ibrahim. Innaka Hamidun Majid.",
+    "text": "O Allah, send prayers upon Muhammad and upon the family of Muhammad, as You sent prayers upon Ibrahim and upon the family of Ibrahim. Indeed, You are Praiseworthy and Glorious.",
+    "note": "The Ibrahimiyyah Salawat — recited in the final Tashahhud of every prayer.",
+    "speakArabic": true
   }
 ]
