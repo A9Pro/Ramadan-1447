@@ -1,0 +1,252 @@
+[
+  {
+    "name": "Fajr",
+    "arabic": "صَلاةُ الفَجر",
+    "translation": "The Dawn Prayer — 2 Rak'ahs (Fard)",
+    "time": "From true dawn until just before sunrise",
+    "rakaat": 2,
+    "steps": [
+      {
+        "title": "Niyyah (Intention)",
+        "text": "Make intention in your heart to pray Fajr Fard. Say internally: 'I intend to pray 2 rak'ahs of Fajr fard prayer for the sake of Allah.' You do not need to say it aloud."
+      },
+      {
+        "title": "Takbiratul Ihram — Opening Takbir",
+        "arabic": "اللهُ أَكْبَر",
+        "text": "Raise both hands to ear level (palms facing forward) and say 'Allahu Akbar'. This begins the prayer. Now you are in a state of salah."
+      },
+      {
+        "title": "Qiyam — Standing & Opening Supplication",
+        "arabic": "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ",
+        "text": "Place right hand over left on the chest. Recite the opening du'a (Thana): 'Subhanakal-lahumma wa bihamdika wa tabarakasmuka wa ta'ala jadduka wa la ilaha ghairuk.' Then recite A'udhu billahi and Bismillah silently."
+      },
+      {
+        "title": "Recitation of Al-Fatihah",
+        "arabic": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+        "text": "Recite Surah Al-Fatihah in full. At the end say 'Ameen' quietly. Al-Fatihah is obligatory in every rak'ah."
+      },
+      {
+        "title": "Recite an Additional Surah",
+        "text": "After Al-Fatihah, recite any surah or verses from the Quran. In Fajr it is Sunnah to recite longer surahs (e.g. Al-Kafirun, Al-Ikhlas, or longer). This is required in the first two rak'ahs."
+      },
+      {
+        "title": "Ruku' — Bowing",
+        "arabic": "سُبْحَانَ رَبِّيَ الْعَظِيم",
+        "text": "Say 'Allahu Akbar' and bow with your back flat, hands on knees. Recite 'Subhana Rabbiyal Azeem' (Glory be to my Lord, the Magnificent) at least 3 times."
+      },
+      {
+        "title": "Qawmah — Rising from Ruku'",
+        "arabic": "سَمِعَ اللهُ لِمَنْ حَمِدَهُ — رَبَّنَا وَلَكَ الْحَمْد",
+        "text": "Rise saying 'Sami Allahu liman hamidah' (Allah hears those who praise Him). When upright, say 'Rabbana wa lakal hamd' (Our Lord, and to You is all praise). Stand briefly."
+      },
+      {
+        "title": "First Sajdah — Prostration",
+        "arabic": "سُبْحَانَ رَبِّيَ الأَعْلَى",
+        "text": "Say 'Allahu Akbar' and go to the ground: forehead, nose, both palms, knees, and toes all touching the floor. Recite 'Subhana Rabbiyal A'la' (Glory be to my Lord, the Most High) at least 3 times."
+      },
+      {
+        "title": "Jalsah — Sitting between Sajdahs",
+        "arabic": "رَبِّ اغْفِرْ لِي",
+        "text": "Rise from prostration saying 'Allahu Akbar'. Sit briefly on your left foot with right foot upright. You may say 'Rabbighfirli' (My Lord, forgive me). Then go back down for the second sajdah."
+      },
+      {
+        "title": "Second Sajdah",
+        "text": "Repeat the sajdah exactly as before: say 'Allahu Akbar', prostrate, recite 'Subhana Rabbiyal A'la' at least 3 times, then rise with 'Allahu Akbar'. This completes the first rak'ah."
+      },
+      {
+        "title": "Second Rak'ah",
+        "text": "Stand up for the second rak'ah. Recite Al-Fatihah and another surah. Then repeat Ruku', Qawmah, and both Sajdahs as in the first rak'ah."
+      },
+      {
+        "title": "At-Tashahhud — Final Sitting",
+        "arabic": "التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ",
+        "text": "After the second sajdah of rak'ah 2, sit in the final position (left foot flat, right foot upright). Recite At-Tashahhud: 'At-tahiyyatu lillahi was-salawatu wat-tayyibat. As-salamu alaika ayyuhan-nabiyyu wa rahmatullahi wa barakatuh. As-salamu alayna wa ala ibadillahis-salihin. Ash-hadu alla ilaha illallah wa ash-hadu anna Muhammadan abduhu wa rasuluh.'"
+      },
+      {
+        "title": "Salawat (Ibrahimiyyah)",
+        "arabic": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّد",
+        "text": "After Tashahhud recite Salawat: 'Allahumma salli ala Muhammad wa ala ali Muhammad kama sallayta ala Ibrahim wa ala ali Ibrahim innaka hamidun majid. Allahumma barik ala Muhammad...' (full Ibrahim salawat)."
+      },
+      {
+        "title": "Tasleem — Closing the Prayer",
+        "arabic": "السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّه",
+        "text": "Turn your head to the right and say 'As-salamu alaykum wa rahmatullah', then turn to the left and repeat. This ends the prayer. You have completed Fajr."
+      }
+    ]
+  },
+  {
+    "name": "Dhuhr",
+    "arabic": "صَلاةُ الظُّهر",
+    "translation": "The Midday Prayer — 4 Rak'ahs (Fard)",
+    "time": "From when the sun passes its zenith until Asr time",
+    "rakaat": 4,
+    "steps": [
+      {
+        "title": "Niyyah (Intention)",
+        "text": "Intend in your heart to pray 4 rak'ahs of Dhuhr fard. You may say it quietly or keep it in your heart."
+      },
+      {
+        "title": "Takbiratul Ihram",
+        "arabic": "اللهُ أَكْبَر",
+        "text": "Raise hands to ear level, say 'Allahu Akbar', and fold right over left on chest. Recite the opening du'a and then A'udhu and Bismillah silently."
+      },
+      {
+        "title": "First Two Rak'ahs (Loud intention, silent recitation)",
+        "text": "Recite Al-Fatihah and an additional surah silently in each of the first 2 rak'ahs. Perform Ruku', Qawmah, and two Sajdahs as in Fajr. After rak'ah 2, sit for the first Tashahhud (stop after 'Ash-hadu anna Muhammadan abduhu wa rasuluh' — do not recite Salawat yet)."
+      },
+      {
+        "title": "First Tashahhud — Short Sitting",
+        "text": "After 2 rak'ahs, sit and recite only the Tashahhud (not the full Salawat Ibrahimiyyah). Then rise for rak'ah 3 with 'Allahu Akbar'."
+      },
+      {
+        "title": "Third and Fourth Rak'ahs",
+        "text": "In rak'ahs 3 and 4, recite only Al-Fatihah (no additional surah). Perform Ruku', Qawmah, and two Sajdahs normally."
+      },
+      {
+        "title": "Final Tashahhud & Salawat",
+        "text": "After the second sajdah of rak'ah 4, sit for the final Tashahhud and recite the full Salawat Ibrahimiyyah. You may add a du'a before the Tasleem."
+      },
+      {
+        "title": "Tasleem",
+        "arabic": "السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّه",
+        "text": "Turn right: 'As-salamu alaykum wa rahmatullah'. Turn left: 'As-salamu alaykum wa rahmatullah'. Dhuhr is complete."
+      }
+    ]
+  },
+  {
+    "name": "Asr",
+    "arabic": "صَلاةُ العَصر",
+    "translation": "The Afternoon Prayer — 4 Rak'ahs (Fard)",
+    "time": "From mid-afternoon until just before sunset",
+    "rakaat": 4,
+    "steps": [
+      {
+        "title": "Niyyah",
+        "text": "Intend to pray 4 rak'ahs of Asr fard prayer for the sake of Allah."
+      },
+      {
+        "title": "Takbiratul Ihram",
+        "arabic": "اللهُ أَكْبَر",
+        "text": "Raise both hands and say 'Allahu Akbar'. Fold hands on chest, recite opening du'a silently. Dhuhr and Asr are prayed identically in structure."
+      },
+      {
+        "title": "First Two Rak'ahs",
+        "text": "Recite Al-Fatihah and an additional surah silently in rak'ahs 1 and 2. Perform Ruku', Qawmah, and two Sajdahs in each. After rak'ah 2, sit for the short Tashahhud."
+      },
+      {
+        "title": "Short Tashahhud (after Rak'ah 2)",
+        "text": "Recite only the Tashahhud — do not recite Salawat. Then rise for rak'ah 3."
+      },
+      {
+        "title": "Third and Fourth Rak'ahs",
+        "text": "Recite only Al-Fatihah in rak'ahs 3 and 4. Perform all pillars (Ruku', Qawmah, Sajdahs) as normal."
+      },
+      {
+        "title": "Final Tashahhud, Salawat & Tasleem",
+        "text": "After rak'ah 4's final sajdah, recite the full Tashahhud and Salawat Ibrahimiyyah. Then complete with Tasleem to the right and left."
+      }
+    ]
+  },
+  {
+    "name": "Maghrib",
+    "arabic": "صَلاةُ المَغرِب",
+    "translation": "The Sunset Prayer — 3 Rak'ahs (Fard)",
+    "time": "From immediately after sunset until the red twilight disappears",
+    "rakaat": 3,
+    "steps": [
+      {
+        "title": "Niyyah",
+        "text": "Intend to pray 3 rak'ahs of Maghrib fard. Make haste — Maghrib's time window is relatively short."
+      },
+      {
+        "title": "Takbiratul Ihram",
+        "arabic": "اللهُ أَكْبَر",
+        "text": "Begin with Takbir, fold hands, and recite the opening du'a and Bismillah."
+      },
+      {
+        "title": "First Two Rak'ahs (Recited aloud in congregation, silently alone)",
+        "text": "Recite Al-Fatihah and an additional surah in rak'ahs 1 and 2. Maghrib is prayed aloud (jahr) when in congregation. Perform all pillars normally."
+      },
+      {
+        "title": "Short Tashahhud after Rak'ah 2",
+        "text": "After rak'ah 2's second sajdah, sit briefly and recite only the Tashahhud. Then rise for rak'ah 3."
+      },
+      {
+        "title": "Third Rak'ah",
+        "text": "In rak'ah 3, recite only Al-Fatihah (no additional surah). Perform Ruku', Qawmah, and two Sajdahs."
+      },
+      {
+        "title": "Final Tashahhud, Salawat & Tasleem",
+        "text": "Sit after rak'ah 3's final sajdah. Recite full Tashahhud and Salawat Ibrahimiyyah. Complete with Tasleem right and left."
+      }
+    ]
+  },
+  {
+    "name": "Isha",
+    "arabic": "صَلاةُ العِشَاء",
+    "translation": "The Night Prayer — 4 Rak'ahs (Fard)",
+    "time": "From end of Maghrib time until midnight (or Fajr)",
+    "rakaat": 4,
+    "steps": [
+      {
+        "title": "Niyyah",
+        "text": "Intend to pray 4 rak'ahs of Isha fard. It is Sunnah to delay Isha slightly if possible."
+      },
+      {
+        "title": "Takbiratul Ihram",
+        "arabic": "اللهُ أَكْبَر",
+        "text": "Raise hands, say Takbir, fold on chest. Recite opening du'a and Bismillah silently."
+      },
+      {
+        "title": "First Two Rak'ahs (Recited aloud in congregation)",
+        "text": "Isha is prayed aloud (like Maghrib and Fajr). Recite Al-Fatihah and an additional surah in rak'ahs 1 and 2. Perform all pillars."
+      },
+      {
+        "title": "Short Tashahhud after Rak'ah 2",
+        "text": "Sit briefly after rak'ah 2 and recite only the Tashahhud. Rise for rak'ah 3."
+      },
+      {
+        "title": "Third and Fourth Rak'ahs (Silent)",
+        "text": "Recite only Al-Fatihah in rak'ahs 3 and 4 (silently). Perform all pillars as normal."
+      },
+      {
+        "title": "Final Tashahhud, Salawat & Tasleem",
+        "text": "After rak'ah 4's final sajdah, recite full Tashahhud and Salawat. Complete with Tasleem. You may follow with 3 rak'ahs Witr."
+      }
+    ]
+  },
+  {
+    "name": "Taraweeh",
+    "arabic": "صَلاةُ التَّرَاوِيح",
+    "translation": "Ramadan Night Prayer — 8 or 20 Rak'ahs (Sunnah)",
+    "time": "After Isha prayer throughout Ramadan",
+    "rakaat": 20,
+    "steps": [
+      {
+        "title": "What is Taraweeh?",
+        "text": "Taraweeh is a special Sunnah Mu'akkadah prayer prayed only in Ramadan after Isha. The Prophet ﷺ prayed it and encouraged the ummah. Scholars differ on 8 vs 20 rak'ahs — both are valid."
+      },
+      {
+        "title": "Niyyah",
+        "text": "Intend to pray Taraweeh for the sake of Allah. It is prayed in sets of 2 rak'ahs, with a short rest (tarweehah) after every 4 rak'ahs — this is where the name comes from."
+      },
+      {
+        "title": "Structure — Sets of 2 Rak'ahs",
+        "text": "Pray 2 rak'ahs exactly like Fajr: Takbir, Fatihah + surah in both rak'ahs, Ruku', Sajdahs, full Tashahhud + Salawat, then Tasleem. Rest briefly, then repeat."
+      },
+      {
+        "title": "Quran Recitation",
+        "text": "It is Sunnah to complete the entire Quran in Taraweeh during Ramadan. In congregation, the imam will recite a portion each night. If praying alone, recite what you have memorised."
+      },
+      {
+        "title": "Witr — Closing Prayer",
+        "text": "After Taraweeh, pray Witr — 3 rak'ahs (or 1) with the du'a Qunut in the final rak'ah before Ruku' or after. Witr is Sunnah Mu'akkadah and should not be left without a reason."
+      },
+      {
+        "title": "Du'a Qunut (in Witr)",
+        "arabic": "اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْت",
+        "text": "Recite: 'Allahumma ihdini fiman hadayt, wa afini fiman afayt, wa tawallani fiman tawallayt, wa barik li fima a'tayt, wa qini sharra ma qadayt...' This is the established Qunut of Witr from the Sunnah."
+      }
+    ]
+  }
+]
