@@ -1,12 +1,11 @@
 // src/components/ui/animations/Reveal.jsx
-import { motion, useAnimation } from "framer-motion";
+import { motion, useAnimation, useInView } from "framer-motion";
 import { useEffect, useRef } from "react";
-import { useInView } from "framer-motion";
 
-export default function Reveal({ children }) {
+export default function Reveal({ children, delay = 0 }) {
   const ref = useRef(null);
   const controls = useAnimation();
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "-80px" });
 
   useEffect(() => {
     if (inView) {
@@ -15,8 +14,12 @@ export default function Reveal({ children }) {
   }, [controls, inView]);
 
   const variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut", delay },
+    },
   };
 
   return (
