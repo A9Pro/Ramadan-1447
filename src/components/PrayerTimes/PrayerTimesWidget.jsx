@@ -184,10 +184,15 @@ function CityAutocomplete({ onSelect }) {
 }
 
 // ─── Main Widget ──────────────────────────────────────────────────────────────
-export default function PrayerTimesWidget() {
+export default function PrayerTimesWidget({ onTimesLoaded }) {
   const [open, setOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [times, setTimes] = useState(null);
+
+  const setTimesAndNotify = (t) => {
+    setTimes(t);
+    if (onTimesLoaded) onTimesLoaded(t);
+  };
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [city, setCity] = useState(() => localStorage.getItem("prayerCity") || "");
@@ -206,7 +211,8 @@ export default function PrayerTimesWidget() {
       const data = await res.json();
       if (data.code === 200) {
         const t = data.data.timings;
-        setTimes({ Fajr: t.Fajr, Sunrise: t.Sunrise, Dhuhr: t.Dhuhr, Asr: t.Asr, Maghrib: t.Maghrib, Isha: t.Isha });
+        const parsed = { Fajr: t.Fajr, Sunrise: t.Sunrise, Dhuhr: t.Dhuhr, Asr: t.Asr, Maghrib: t.Maghrib, Isha: t.Isha };
+        setTimesAndNotify(parsed);
         const tz = data.data.meta.timezone || "Your Location";
         setCity(tz);
         localStorage.setItem("prayerCity", tz);
@@ -225,7 +231,8 @@ export default function PrayerTimesWidget() {
       const data = await res.json();
       if (data.code === 200) {
         const t = data.data.timings;
-        setTimes({ Fajr: t.Fajr, Sunrise: t.Sunrise, Dhuhr: t.Dhuhr, Asr: t.Asr, Maghrib: t.Maghrib, Isha: t.Isha });
+        const parsed = { Fajr: t.Fajr, Sunrise: t.Sunrise, Dhuhr: t.Dhuhr, Asr: t.Asr, Maghrib: t.Maghrib, Isha: t.Isha };
+        setTimesAndNotify(parsed);
         setCity(cityName);
         localStorage.setItem("prayerCity", cityName);
         localStorage.setItem("prayerLocationMode", "city");
