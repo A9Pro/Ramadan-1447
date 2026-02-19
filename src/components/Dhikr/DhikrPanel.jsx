@@ -1,10 +1,10 @@
 // src/components/Dhikr/DhikrPanel.jsx
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import { RotateCcw, ChevronLeft, ChevronRight, Languages } from "lucide-react";
 import dhikrList from "./dhikrList.json";
 
-// Tasbih SVG ring counter
+// ─── Tasbih Ring Counter ──────────────────────────────────────────────────────
 function TasbihCounter({ count, goal, onClick, completed, pulse }) {
   const size = 220;
   const strokeWidth = 10;
@@ -15,7 +15,6 @@ function TasbihCounter({ count, goal, onClick, completed, pulse }) {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      {/* Circular button */}
       <motion.button
         onClick={onClick}
         disabled={completed}
@@ -25,88 +24,106 @@ function TasbihCounter({ count, goal, onClick, completed, pulse }) {
         className="relative flex items-center justify-center select-none"
         style={{ width: size, height: size }}
       >
-        {/* SVG ring */}
-        <svg
-          width={size}
-          height={size}
-          className="absolute inset-0 -rotate-90"
-          style={{ transform: "rotate(-90deg)" }}
-        >
-          {/* Track */}
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={strokeWidth}
-            className="opacity-10"
-          />
-          {/* Progress */}
-          <motion.circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={strokeWidth}
-            strokeLinecap="round"
+        <svg width={size} height={size} className="absolute inset-0" style={{ transform: "rotate(-90deg)" }}>
+          <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="currentColor"
+            strokeWidth={strokeWidth} className="opacity-10" />
+          <motion.circle cx={size / 2} cy={size / 2} r={radius} fill="none"
+            stroke="#c9a96e" strokeWidth={strokeWidth} strokeLinecap="round"
             strokeDasharray={circumference}
             animate={{ strokeDashoffset: offset }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="text-ramadan-dark-accent"
-            style={{ stroke: "var(--tw-color-ramadan-dark-accent, #c9a96e)" }}
           />
         </svg>
 
-        {/* Inner circle — glassy bead look */}
         <div
           className={`relative z-10 flex flex-col items-center justify-center rounded-full transition-all duration-300 ${
             completed
-              ? "bg-ramadan-dark-accent/20 border-2 border-ramadan-dark-accent/50"
-              : "bg-black/10 dark:bg-white/5 border-2 border-white/10 dark:border-white/10 border-black/10"
+              ? "bg-amber-400/20 border-2 border-amber-400/50"
+              : "bg-black/10 border-2 border-white/10"
           }`}
           style={{ width: size - strokeWidth * 3, height: size - strokeWidth * 3 }}
         >
-          {/* Glossy highlight */}
-          <div
-            className="absolute top-4 left-1/2 -translate-x-1/2 rounded-full bg-white/10 blur-sm"
-            style={{ width: "55%", height: "28%" }}
-          />
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 rounded-full bg-white/10 blur-sm"
+            style={{ width: "55%", height: "28%" }} />
 
           {completed ? (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="flex flex-col items-center gap-1"
-            >
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+              className="flex flex-col items-center gap-1">
               <span className="text-5xl">✓</span>
               <span className="text-xs opacity-60">Complete</span>
             </motion.div>
           ) : (
-            <motion.span
-              key={count}
+            <motion.span key={count}
               initial={{ scale: 0.7, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="text-6xl font-bold tabular-nums text-ramadan-dark-accent"
+              className="text-6xl font-bold tabular-nums text-amber-400"
               style={{ lineHeight: 1 }}
             >
               {String(count).padStart(2, "0")}
             </motion.span>
           )}
-
-          {!completed && (
-            <span className="text-sm opacity-40 mt-1">/ {goal}</span>
-          )}
+          {!completed && <span className="text-sm opacity-40 mt-1">/ {goal}</span>}
         </div>
       </motion.button>
-
       <p className="text-xs opacity-40 mt-1">Tap to count</p>
     </div>
   );
 }
 
+// ─── Dhikr Text Card ──────────────────────────────────────────────────────────
+function DhikrTextCard({ dhikr, direction }) {
+  return (
+    <AnimatePresence mode="wait" custom={direction}>
+      <motion.div
+        key={`${dhikr.arabic}-${dhikr.text}`}
+        custom={direction}
+        initial={{ opacity: 0, y: direction * 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: direction * -12 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+        className="rounded-2xl border border-white/8 bg-white/3 px-5 py-5 space-y-3 text-center"
+      >
+        {/* Arabic */}
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, duration: 0.3 }}
+          className="text-2xl leading-relaxed font-arabic text-amber-400"
+          dir="rtl"
+          style={{ fontFamily: "'Noto Naskh Arabic', 'Amiri', 'Scheherazade New', serif" }}
+        >
+          {dhikr.arabic}
+        </motion.p>
+
+        {/* Divider */}
+        <div className="w-12 h-px bg-amber-400/20 mx-auto" />
+
+        {/* Transliteration */}
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
+          className="text-sm font-medium opacity-70 italic tracking-wide"
+        >
+          {dhikr.transliteration}
+        </motion.p>
+
+        {/* Translation */}
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.3 }}
+          className="text-xs opacity-45 leading-relaxed"
+        >
+          "{dhikr.translation}"
+        </motion.p>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// ─── Main Panel ───────────────────────────────────────────────────────────────
 export default function DhikrPanel() {
   const [categoryIdx, setCategoryIdx] = useState(0);
   const [dhikrIdx, setDhikrIdx] = useState(0);
@@ -152,18 +169,19 @@ export default function DhikrPanel() {
   ).length;
 
   return (
-    <div className="rounded-3xl p-8 border border-white/10 dark:border-white/10 border-black/10 bg-ramadan-dark-elevated dark:bg-ramadan-dark-elevated bg-ramadan-light-surface shadow-medium">
+    <div className="rounded-3xl p-8 border border-white/10 bg-ramadan-dark-elevated shadow-medium">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-ramadan-dark-accent dark:text-ramadan-dark-accent">
-            Dhikr & Remembrance
-          </h2>
+          <h2 className="text-2xl font-semibold text-amber-400">Dhikr & Remembrance</h2>
           <p className="text-sm mt-1 opacity-50">Tap the circle to count</p>
         </div>
-        <div className="text-xs opacity-40">
-          <span className="text-ramadan-dark-accent font-medium opacity-100">{categoryCompleted}</span>
-          {" / "}{dhikrItems.length} done
+        <div className="flex items-center gap-2">
+          <Languages size={14} className="text-amber-400/40" />
+          <span className="text-xs opacity-40">
+            <span className="text-amber-400 font-medium opacity-100">{categoryCompleted}</span>
+            {" / "}{dhikrItems.length} done
+          </span>
         </div>
       </div>
 
@@ -175,15 +193,12 @@ export default function DhikrPanel() {
             (item, i) => (counts[`${idx}-${i}`] || 0) >= item.goal
           ).length;
           return (
-            <motion.button
-              key={idx}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+            <motion.button key={idx} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               onClick={() => selectCategory(idx)}
               className={`relative flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
                 isActive
-                  ? "border-ramadan-dark-accent/40 bg-ramadan-dark-accent/10 text-ramadan-dark-accent"
-                  : "border-white/10 dark:border-white/10 border-black/10 opacity-50 hover:opacity-80"
+                  ? "border-amber-400/40 bg-amber-400/10 text-amber-400"
+                  : "border-white/10 opacity-50 hover:opacity-80"
               }`}
             >
               {cat.category}
@@ -191,18 +206,16 @@ export default function DhikrPanel() {
                 <span className="ml-1.5 text-xs opacity-60">{catDone}/{cat.dhikr.length}</span>
               )}
               {isActive && (
-                <motion.div
-                  layoutId="dhikr-cat-pill"
-                  className="absolute inset-0 rounded-xl border border-ramadan-dark-accent/30"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
+                <motion.div layoutId="dhikr-cat-pill"
+                  className="absolute inset-0 rounded-xl border border-amber-400/30"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }} />
               )}
             </motion.button>
           );
         })}
       </div>
 
-      {/* Category slide */}
+      {/* Category slide transition */}
       <AnimatePresence mode="wait" custom={catDirection}>
         <motion.div
           key={categoryIdx}
@@ -211,53 +224,28 @@ export default function DhikrPanel() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: catDirection * -30 }}
           transition={{ duration: 0.22, ease: "easeInOut" }}
-          className="space-y-6"
+          className="space-y-5"
         >
-          {/* Dhikr text */}
-          <AnimatePresence mode="wait" custom={dhikrDirection}>
-            <motion.div
-              key={`text-${categoryIdx}-${dhikrIdx}`}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="text-center px-4"
-            >
-              <p className="text-base font-medium opacity-80 leading-relaxed">
-                {currentDhikr.text}
-              </p>
-            </motion.div>
-          </AnimatePresence>
+          {/* Dhikr text card — Arabic + transliteration + translation */}
+          <DhikrTextCard dhikr={currentDhikr} direction={dhikrDirection} />
 
-          {/* Tasbih Counter — centered */}
+          {/* Tasbih counter */}
           <div className="flex justify-center">
-            <TasbihCounter
-              count={count}
-              goal={goal}
-              onClick={handleCount}
-              completed={completed}
-              pulse={pulse}
-            />
+            <TasbihCounter count={count} goal={goal} onClick={handleCount}
+              completed={completed} pulse={pulse} />
           </div>
 
           {/* Completion message */}
           <AnimatePresence>
             {completed && (
               <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-3 rounded-2xl bg-ramadan-dark-accent/10 border border-ramadan-dark-accent/20"
+                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className="text-center py-3 rounded-2xl bg-amber-400/10 border border-amber-400/20"
               >
-                <p className="text-sm text-ramadan-dark-accent">
-                  🌙 {goal}× completed — Alhamdulillah
-                </p>
+                <p className="text-sm text-amber-400">🌙 {goal}× completed — Alhamdulillah</p>
                 {dhikrIdx < dhikrItems.length - 1 && (
-                  <motion.button
-                    whileTap={{ scale: 0.97 }}
-                    onClick={goNext}
-                    className="mt-1.5 text-xs opacity-60 hover:opacity-100 underline underline-offset-2"
-                  >
+                  <motion.button whileTap={{ scale: 0.97 }} onClick={goNext}
+                    className="mt-1.5 text-xs opacity-60 hover:opacity-100 underline underline-offset-2">
                     Next dhikr →
                   </motion.button>
                 )}
@@ -265,14 +253,10 @@ export default function DhikrPanel() {
             )}
           </AnimatePresence>
 
-          {/* Dhikr navigator */}
+          {/* Dhikr navigator dots */}
           <div className="flex items-center gap-2">
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={goPrev}
-              disabled={dhikrIdx === 0}
-              className="p-2 rounded-xl border border-white/10 dark:border-white/10 border-black/10 opacity-40 hover:opacity-80 disabled:opacity-20 transition-opacity"
-            >
+            <motion.button whileTap={{ scale: 0.9 }} onClick={goPrev} disabled={dhikrIdx === 0}
+              className="p-2 rounded-xl border border-white/10 opacity-40 hover:opacity-80 disabled:opacity-20 transition-opacity">
               <ChevronLeft size={16} />
             </motion.button>
 
@@ -281,15 +265,13 @@ export default function DhikrPanel() {
                 const isActive = dhikrIdx === idx;
                 const isDone = (counts[`${categoryIdx}-${idx}`] || 0) >= item.goal;
                 return (
-                  <motion.button
-                    key={idx}
-                    whileTap={{ scale: 0.9 }}
+                  <motion.button key={idx} whileTap={{ scale: 0.9 }}
                     onClick={() => selectDhikr(idx)}
                     className={`flex-shrink-0 w-6 h-6 rounded-full text-xs border transition-all flex items-center justify-center ${
                       isActive
-                        ? "border-ramadan-dark-accent bg-ramadan-dark-accent text-white"
+                        ? "border-amber-400 bg-amber-400 text-[#041C2C] font-bold"
                         : isDone
-                        ? "border-ramadan-dark-accent/50 bg-ramadan-dark-accent/10 text-ramadan-dark-accent"
+                        ? "border-amber-400/50 bg-amber-400/10 text-amber-400"
                         : "border-current opacity-20 hover:opacity-40"
                     }`}
                   >
@@ -299,26 +281,19 @@ export default function DhikrPanel() {
               })}
             </div>
 
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={goNext}
+            <motion.button whileTap={{ scale: 0.9 }} onClick={goNext}
               disabled={dhikrIdx === dhikrItems.length - 1}
-              className="p-2 rounded-xl border border-white/10 dark:border-white/10 border-black/10 opacity-40 hover:opacity-80 disabled:opacity-20 transition-opacity"
-            >
+              className="p-2 rounded-xl border border-white/10 opacity-40 hover:opacity-80 disabled:opacity-20 transition-opacity">
               <ChevronRight size={16} />
             </motion.button>
           </div>
 
           {/* Reset */}
           <div className="flex justify-center">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
               onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 dark:border-white/10 border-black/10 opacity-40 hover:opacity-70 transition-opacity text-sm"
-            >
-              <RotateCcw size={14} />
-              Reset
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 opacity-40 hover:opacity-70 transition-opacity text-sm">
+              <RotateCcw size={14} /> Reset
             </motion.button>
           </div>
         </motion.div>
@@ -327,13 +302,9 @@ export default function DhikrPanel() {
       {/* Category dots */}
       <div className="flex justify-center gap-1.5 mt-6">
         {dhikrList.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => selectCategory(idx)}
+          <button key={idx} onClick={() => selectCategory(idx)}
             className={`rounded-full transition-all ${
-              categoryIdx === idx
-                ? "w-4 h-1.5 bg-ramadan-dark-accent"
-                : "w-1.5 h-1.5 bg-current opacity-20"
+              categoryIdx === idx ? "w-4 h-1.5 bg-amber-400" : "w-1.5 h-1.5 bg-current opacity-20"
             }`}
           />
         ))}
