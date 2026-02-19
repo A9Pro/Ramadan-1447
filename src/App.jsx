@@ -13,6 +13,7 @@ import QuranLearningPanel from "./components/QuranLearning/QuranLearningPanel";
 import WorkoutPanel from "./components/Workout/WorkoutPanel";
 import PrayerTrackerPanel from "./components/Prayer/PrayerTrackerPanel";
 import CommunityPrayerBoard from "./components/Community/CommunityPrayerBoard";
+import PrayerTimesWidget from "./components/PrayerTimes/PrayerTimesWidget";
 
 const PAGES = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
@@ -228,6 +229,9 @@ export default function App() {
       <footer className="text-center py-10 text-sm opacity-25">
         Made with intention & du'a for the Ummah 🤲
       </footer>
+
+      {/* Floating Prayer Times Widget */}
+      <PrayerTimesWidget />
     </div>
   );
 }
