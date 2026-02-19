@@ -1,7 +1,7 @@
 // src/components/Community/CommunityPrayerBoard.jsx
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, MessageCircle, Send, Users, Sparkles, X } from "lucide-react";
+import { Heart, MessageCircle, Send, Users, Sparkles, X, Edit } from "lucide-react";
 import { db } from "../../firebase";
 import {
   collection,
@@ -36,15 +36,21 @@ function timeAgo(ts) {
 }
 
 const categoryColor = (cat) => ({
-  "Dua Request": "text-amber-400", "Guidance": "text-blue-400",
-  "Gratitude": "text-emerald-400", "Healing": "text-rose-400",
-  "Family": "text-purple-400", "Hardship": "text-orange-400",
+  "Dua Request": "text-amber-400",
+  "Guidance": "text-blue-400",
+  "Gratitude": "text-emerald-400",
+  "Healing": "text-rose-400",
+  "Family": "text-purple-400",
+  "Hardship": "text-orange-400",
 })[cat] || "text-amber-400";
 
 const categoryBg = (cat) => ({
-  "Dua Request": "bg-amber-400/10", "Guidance": "bg-blue-400/10",
-  "Gratitude": "bg-emerald-400/10", "Healing": "bg-rose-400/10",
-  "Family": "bg-purple-400/10", "Hardship": "bg-orange-400/10",
+  "Dua Request": "bg-amber-400/10",
+  "Guidance": "bg-blue-400/10",
+  "Gratitude": "bg-emerald-400/10",
+  "Healing": "bg-rose-400/10",
+  "Family": "bg-purple-400/10",
+  "Hardship": "bg-orange-400/10",
 })[cat] || "bg-amber-400/10";
 
 export default function CommunityPrayerBoard() {
@@ -57,15 +63,28 @@ export default function CommunityPrayerBoard() {
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ category: "Dua Request", message: "" });
 
-  const [myName] = useState(() => {
-    const saved = sessionStorage.getItem("anonName");
-    if (saved) return saved;
-    const name = generateAnonymousName();
-    sessionStorage.setItem("anonName", name);
-    return name;
+  // Name choice logic
+  const [postAsMode, setPostAsMode] = useState(() => {
+    return sessionStorage.getItem("postAsMode") || "random";
   });
 
-  // Real-time Firestore listener
+  const [customName, setCustomName] = useState(() => {
+    return sessionStorage.getItem("customName") || "";
+  });
+
+  const displayName = postAsMode === "custom" && customName.trim()
+    ? customName.trim()
+    : generateAnonymousName();
+
+  // Save preferences
+  useEffect(() => {
+    sessionStorage.setItem("postAsMode", postAsMode);
+    if (postAsMode === "custom") {
+      sessionStorage.setItem("customName", customName.trim());
+    }
+  }, [postAsMode, customName]);
+
+  // Real-time posts listener
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
     const unsub = onSnapshot(q, (snap) => {
@@ -82,7 +101,7 @@ export default function CommunityPrayerBoard() {
       await addDoc(collection(db, "posts"), {
         category: form.category,
         message: form.message.trim(),
-        author: myName,
+        author: displayName,
         timestamp: serverTimestamp(),
         reactions: {},
         responses: [],
@@ -106,20 +125,34 @@ export default function CommunityPrayerBoard() {
     const text = newResponse[postId]?.trim();
     if (!text) return;
     await updateDoc(doc(db, "posts", postId), {
-      responses: arrayUnion({ id: `r-${Date.now()}`, author: myName, text, timestamp: Date.now() }),
+      responses: arrayUnion({
+        id: `r-${Date.now()}`,
+        author: displayName, // use chosen name for responses too
+        text,
+        timestamp: Date.now(),
+      }),
     });
     setNewResponse((prev) => ({ ...prev, [postId]: "" }));
   };
 
-  const filtered = activeCategory === "All" ? posts : posts.filter((p) => p.category === activeCategory);
-  const totalAmeen = posts.reduce((acc, p) => acc + Object.values(p.reactions || {}).reduce((a, b) => a + b, 0), 0);
+  const filtered = activeCategory === "All"
+    ? posts
+    : posts.filter((p) => p.category === activeCategory);
+
+  const totalAmeen = posts.reduce(
+    (acc, p) => acc + Object.values(p.reactions || {}).reduce((a, b) => a + b, 0),
+    0
+  );
 
   return (
     <div className="min-h-screen">
       {/* Hero */}
       <div className="relative overflow-hidden rounded-3xl mb-8 p-10 border border-white/8 bg-ramadan-dark-elevated shadow-[0_8px_40px_rgba(0,0,0,0.45)]">
-        <div className="absolute inset-0 opacity-5 pointer-events-none"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a96e' fill-opacity='1'%3E%3Cpath d='M30 0l8.66 15H21.34L30 0zm0 60l-8.66-15h17.32L30 60zM0 30l15-8.66V38.66L0 30zm60 0L45 38.66V21.34L60 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }}
+        <div
+          className="absolute inset-0 opacity-5 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a96e' fill-opacity='1'%3E%3Cpath d='M30 0l8.66 15H21.34L30 0zm0 60l-8.66-15h17.32L30 60zM0 30l15-8.66V38.66L0 30zm60 0L45 38.66V21.34L60 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
         />
         <div className="absolute top-[-100px] right-[-100px] w-[400px] h-[400px] bg-amber-400/8 blur-[120px] rounded-full pointer-events-none" />
 
@@ -133,13 +166,14 @@ export default function CommunityPrayerBoard() {
             </div>
             <h1 className="text-4xl font-semibold text-amber-400 mb-2">Prayer Board</h1>
             <p className="opacity-40 text-sm leading-relaxed max-w-md">
-              A space for the Ummah to share du'a requests, gratitude, and spiritual support.
+              A space for the Ummah to share du'a requests, gratitude, and spiritual support.  
               No account needed — every voice is welcome. 🤲
             </p>
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-amber-400/15 border border-amber-400/30 text-amber-400 font-medium hover:bg-amber-400/25 transition-all self-start"
           >
@@ -162,14 +196,26 @@ export default function CommunityPrayerBoard() {
         </div>
       </div>
 
-      {/* Anonymous name badge */}
-      <div className="flex items-center gap-2 mb-6 px-4 py-2.5 rounded-2xl border border-white/8 bg-white/3 w-fit">
-        <div className="w-6 h-6 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-xs text-amber-400 font-bold">
-          {myName[0]}
+      {/* Current posting identity */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 mb-6 px-4 py-3 rounded-2xl border border-white/8 bg-white/3 w-fit">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-sm text-amber-400 font-bold">
+            {displayName[0]}
+          </div>
+          <div>
+            <span className="text-xs opacity-50">Posting as</span>
+            <p className="text-sm font-medium text-amber-400">{displayName}</p>
+          </div>
         </div>
-        <span className="text-xs opacity-40">You are posting as</span>
-        <span className="text-xs text-amber-400/70 font-medium">{myName}</span>
-        <span className="text-xs opacity-25">· this session only</span>
+
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => setShowForm(true)}
+          className="text-xs px-3 py-1.5 rounded-xl border border-amber-400/30 bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 transition-all"
+        >
+          <Edit size={14} className="inline mr-1" /> Change name
+        </motion.button>
       </div>
 
       {/* Category Filter */}
@@ -177,7 +223,10 @@ export default function CommunityPrayerBoard() {
         {CATEGORIES.map((cat) => {
           const isActive = activeCategory === cat;
           return (
-            <motion.button key={cat} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            <motion.button
+              key={cat}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setActiveCategory(cat)}
               className={`relative flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
                 isActive ? "border-amber-400/40 bg-amber-400/10 text-amber-400" : "border-white/8 opacity-40 hover:opacity-70"
@@ -185,7 +234,8 @@ export default function CommunityPrayerBoard() {
             >
               {cat}
               {isActive && (
-                <motion.div layoutId="community-filter-pill"
+                <motion.div
+                  layoutId="community-filter-pill"
                   className="absolute inset-0 rounded-xl border border-amber-400/30"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
@@ -195,21 +245,30 @@ export default function CommunityPrayerBoard() {
         })}
       </div>
 
-      {/* Posts */}
+      {/* Posts list */}
       {loading ? (
         <div className="text-center py-20 opacity-40">
-          <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-            className="w-8 h-8 border-2 border-amber-400/40 border-t-transparent rounded-full mx-auto mb-4" />
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+            className="w-8 h-8 border-2 border-amber-400/40 border-t-transparent rounded-full mx-auto mb-4"
+          />
           <p className="text-sm">Loading community posts...</p>
         </div>
       ) : filtered.length === 0 ? (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          className="text-center py-20 rounded-3xl border border-dashed border-white/15">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-20 rounded-3xl border border-dashed border-white/15"
+        >
           <p className="text-4xl mb-4">🤲</p>
           <p className="font-medium opacity-50">No posts yet</p>
           <p className="text-sm opacity-30 mt-1">Be the first to share a prayer request</p>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => setShowForm(true)}
-            className="mt-4 text-sm text-amber-400/60 underline underline-offset-2 hover:text-amber-400">
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setShowForm(true)}
+            className="mt-4 text-sm text-amber-400/60 underline underline-offset-2 hover:text-amber-400"
+          >
             Share now
           </motion.button>
         </motion.div>
@@ -219,9 +278,12 @@ export default function CommunityPrayerBoard() {
             {filtered.map((post, idx) => {
               const isExpanded = expandedPost === post.id;
               return (
-                <motion.div key={post.id}
-                  initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }} transition={{ delay: Math.min(idx * 0.04, 0.3) }}
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ delay: Math.min(idx * 0.04, 0.3) }}
                   className="rounded-3xl border border-white/8 bg-ramadan-dark-elevated overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
                 >
                   <div className="p-6">
@@ -235,7 +297,11 @@ export default function CommunityPrayerBoard() {
                           <p className="text-xs opacity-30">{timeAgo(post.timestamp)}</p>
                         </div>
                       </div>
-                      <span className={`text-xs px-3 py-1 rounded-full font-medium ${categoryColor(post.category)} ${categoryBg(post.category)}`}>
+                      <span
+                        className={`text-xs px-3 py-1 rounded-full font-medium ${categoryColor(
+                          post.category
+                        )} ${categoryBg(post.category)}`}
+                      >
                         {post.category}
                       </span>
                     </div>
@@ -244,7 +310,10 @@ export default function CommunityPrayerBoard() {
 
                     <div className="flex items-center gap-2 flex-wrap">
                       {RESPONSES.map((r) => (
-                        <motion.button key={r} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.93 }}
+                        <motion.button
+                          key={r}
+                          whileHover={{ scale: 1.08 }}
+                          whileTap={{ scale: 0.93 }}
                           onClick={() => handleReaction(post.id, r)}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs transition-all ${
                             post.reactions?.[r] > 0
@@ -257,20 +326,27 @@ export default function CommunityPrayerBoard() {
                         </motion.button>
                       ))}
 
-                      <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => setExpandedPost(isExpanded ? null : post.id)}
                         className="ml-auto flex items-center gap-1.5 text-xs opacity-40 hover:opacity-70 transition-opacity"
                       >
                         <MessageCircle size={14} />
-                        {post.responses?.length > 0 ? `${post.responses.length} response${post.responses.length > 1 ? "s" : ""}` : "Respond"}
+                        {post.responses?.length > 0
+                          ? `${post.responses.length} response${post.responses.length > 1 ? "s" : ""}`
+                          : "Respond"}
                       </motion.button>
                     </div>
                   </div>
 
                   <AnimatePresence>
                     {isExpanded && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
                         className="overflow-hidden border-t border-white/8"
                       >
                         <div className="p-6 space-y-4">
@@ -295,7 +371,7 @@ export default function CommunityPrayerBoard() {
 
                           <div className="flex gap-3">
                             <div className="w-7 h-7 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-xs text-amber-400 flex-shrink-0 mt-1">
-                              {myName[0]}
+                              {displayName[0]}
                             </div>
                             <div className="flex-1 flex gap-2">
                               <input
@@ -305,7 +381,9 @@ export default function CommunityPrayerBoard() {
                                 placeholder="Write a supportive message..."
                                 className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-amber-400/40 transition-all placeholder:opacity-25"
                               />
-                              <motion.button whileTap={{ scale: 0.93 }} onClick={() => handleResponse(post.id)}
+                              <motion.button
+                                whileTap={{ scale: 0.93 }}
+                                onClick={() => handleResponse(post.id)}
                                 disabled={!newResponse[post.id]?.trim()}
                                 className="p-2.5 rounded-xl bg-amber-400/15 border border-amber-400/25 text-amber-400 disabled:opacity-30 hover:bg-amber-400/25 transition-all"
                               >
@@ -328,9 +406,13 @@ export default function CommunityPrayerBoard() {
       <AnimatePresence>
         {showForm && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               onClick={() => setShowForm(false)}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" />
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            />
             <motion.div
               initial={{ opacity: 0, y: 40, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -342,18 +424,74 @@ export default function CommunityPrayerBoard() {
                 <div>
                   <h3 className="text-lg font-semibold text-amber-400">Share with the Ummah</h3>
                   <p className="text-xs opacity-35 mt-0.5">
-                    Posting as <span className="text-amber-400/70">{myName}</span> · visible to all visitors
+                    Posting as <span className="text-amber-400/70">{displayName}</span>
                   </p>
                 </div>
-                <motion.button whileTap={{ scale: 0.93 }} onClick={() => setShowForm(false)}
-                  className="p-2 rounded-xl border border-white/10 opacity-50 hover:opacity-100 transition-opacity">
+                <motion.button
+                  whileTap={{ scale: 0.93 }}
+                  onClick={() => setShowForm(false)}
+                  className="p-2 rounded-xl border border-white/10 opacity-50 hover:opacity-100 transition-opacity"
+                >
                   <X size={16} />
                 </motion.button>
               </div>
 
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none mb-4">
+              {/* Post As Choice */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium opacity-80 mb-2">How would you like to appear?</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setPostAsMode("random")}
+                    className={`p-4 rounded-2xl border text-left transition-all ${
+                      postAsMode === "random"
+                        ? "border-amber-400 bg-amber-400/10 text-amber-400"
+                        : "border-white/10 opacity-60 hover:opacity-80 hover:border-white/20"
+                    }`}
+                  >
+                    <div className="font-medium">Anonymous (random)</div>
+                    <div className="text-xs opacity-60 mt-1">e.g. Grateful Seeker</div>
+                  </button>
+
+                  <button
+                    onClick={() => setPostAsMode("custom")}
+                    className={`p-4 rounded-2xl border text-left transition-all ${
+                      postAsMode === "custom"
+                        ? "border-amber-400 bg-amber-400/10 text-amber-400"
+                        : "border-white/10 opacity-60 hover:opacity-80 hover:border-white/20"
+                    }`}
+                  >
+                    <div className="font-medium">Custom anonymous name</div>
+                    <div className="text-xs opacity-60 mt-1">Write your own (still anonymous)</div>
+                  </button>
+                </div>
+
+                {postAsMode === "custom" && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="mt-4"
+                  >
+                    <input
+                      type="text"
+                      value={customName}
+                      onChange={(e) => setCustomName(e.target.value)}
+                      placeholder="e.g. Hopeful Traveller"
+                      maxLength={30}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-400/40 transition-all placeholder:opacity-40"
+                    />
+                    <p className="text-xs opacity-40 mt-2">
+                      Keep it respectful — no real names, contact info, or identifiable details
+                    </p>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Category selector */}
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none mb-5">
                 {CATEGORIES.filter((c) => c !== "All").map((cat) => (
-                  <motion.button key={cat} whileTap={{ scale: 0.95 }}
+                  <motion.button
+                    key={cat}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => setForm((f) => ({ ...f, category: cat }))}
                     className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
                       form.category === cat
@@ -366,23 +504,33 @@ export default function CommunityPrayerBoard() {
                 ))}
               </div>
 
+              {/* Message */}
               <textarea
                 value={form.message}
                 onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
                 placeholder="Share your du'a request, gratitude, or ask for guidance... 🤲"
-                rows={4}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-amber-400/40 transition-all placeholder:opacity-25 resize-none mb-5"
+                rows={5}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-amber-400/40 transition-all placeholder:opacity-25 resize-none mb-6"
               />
 
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                onClick={handleSubmit} disabled={!form.message.trim() || submitting}
+              {/* Submit */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleSubmit}
+                disabled={!form.message.trim() || submitting}
                 className="w-full py-3.5 rounded-2xl bg-amber-400/15 border border-amber-400/30 text-amber-400 font-semibold hover:bg-amber-400/25 disabled:opacity-30 transition-all flex items-center justify-center gap-2"
               >
                 {submitting ? (
-                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}
-                    className="w-4 h-4 border-2 border-current border-t-transparent rounded-full" />
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 1 }}
+                    className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+                  />
                 ) : (
-                  <><Heart size={16} /> Share with the Ummah</>
+                  <>
+                    <Heart size={16} /> Share with the Ummah
+                  </>
                 )}
               </motion.button>
             </motion.div>
