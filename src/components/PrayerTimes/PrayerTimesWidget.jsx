@@ -1,5 +1,6 @@
 // src/components/PrayerTimes/PrayerTimesWidget.jsx
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, BellOff, MapPin, ChevronDown, X, Settings, Loader, Navigation, Search } from "lucide-react";
 
@@ -34,19 +35,34 @@ function getNextPrayer(times) {
 }
 
 // ─── City Autocomplete ────────────────────────────────────────────────────────
+// Uses Open-Meteo Geocoding API — free, no key, worldwide, CORS-friendly
 function CityAutocomplete({ onSelect }) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [focused, setFocused] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState({});
   const debounceRef = useRef(null);
+  const inputRef = useRef(null);
   const wrapperRef = useRef(null);
 
-  // Close on outside click
+  // Position dropdown using portal — escapes all overflow:hidden parents
+  const updateDropdownPosition = useCallback(() => {
+    if (!inputRef.current) return;
+    const rect = inputRef.current.getBoundingClientRect();
+    setDropdownStyle({
+      position: "fixed",
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: rect.width,
+      zIndex: 99999,
+    });
+  }, []);
+
   useEffect(() => {
     const handler = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setFocused(false);
+        setOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -54,28 +70,21 @@ function CityAutocomplete({ onSelect }) {
   }, []);
 
   const search = useCallback(async (q) => {
-    if (q.trim().length < 2) {
-      setSuggestions([]);
-      return;
-    }
+    if (q.trim().length < 2) { setSuggestions([]); return; }
     setLoading(true);
     try {
-      // Photon API — OpenStreetMap powered, free, no key, worldwide cities
+      // Open-Meteo geocoding — completely free, no API key, works everywhere
       const res = await fetch(
-        `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=7&layer=city&layer=town&layer=village`
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=en&format=json`
       );
       const data = await res.json();
-      const results = (data.features || [])
-        .filter((f) => f.properties?.name && f.properties?.country)
-        .map((f) => ({
-          name: f.properties.name,
-          country: f.properties.country,
-          state: f.properties.state || "",
-          display: [f.properties.name, f.properties.state, f.properties.country]
-            .filter(Boolean)
-            .join(", "),
-        }));
-      // Deduplicate by display string
+      const results = (data.results || []).map((r) => ({
+        name: r.name,
+        country: r.country || "",
+        state: r.admin1 || "",
+        display: [r.name, r.admin1, r.country].filter(Boolean).join(", "),
+      }));
+      // Deduplicate
       const seen = new Set();
       setSuggestions(results.filter((r) => {
         if (seen.has(r.display)) return false;
@@ -92,30 +101,36 @@ function CityAutocomplete({ onSelect }) {
   const handleChange = (e) => {
     const val = e.target.value;
     setQuery(val);
+    updateDropdownPosition();
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => search(val), 300);
   };
 
-  const handleSelect = (suggestion) => {
-    setQuery(suggestion.display);
-    setSuggestions([]);
-    setFocused(false);
-    // Pass "City, Country" to Aladhan API
-    onSelect(`${suggestion.name}, ${suggestion.country}`);
+  const handleFocus = () => {
+    updateDropdownPosition();
+    setOpen(true);
   };
 
-  const showDropdown = focused && (suggestions.length > 0 || (loading && query.length >= 2));
+  const handleSelect = (s) => {
+    setQuery(s.display);
+    setSuggestions([]);
+    setOpen(false);
+    onSelect(`${s.name}, ${s.country}`);
+  };
+
+  const showDropdown = open && (suggestions.length > 0 || (loading && query.length >= 2));
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div ref={wrapperRef}>
       <div className="relative flex items-center">
         <Search size={12} className="absolute left-3 opacity-30 pointer-events-none" />
         <input
+          ref={inputRef}
           value={query}
           onChange={handleChange}
-          onFocus={() => setFocused(true)}
+          onFocus={handleFocus}
           placeholder="Search any city in the world..."
-          className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-3 py-2.5 text-xs outline-none focus:border-amber-400/40 transition-all placeholder:opacity-30"
+          className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-8 py-2.5 text-xs outline-none focus:border-amber-400/40 transition-all placeholder:opacity-30"
         />
         {loading && (
           <motion.div
@@ -128,25 +143,26 @@ function CityAutocomplete({ onSelect }) {
         )}
       </div>
 
-      {/* Dropdown */}
-      <AnimatePresence>
-        {showDropdown && (
+      {/* Portal dropdown — renders outside all overflow containers */}
+      {showDropdown && createPortal(
+        <AnimatePresence>
           <motion.div
+            key="city-dropdown"
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 mt-1 rounded-2xl border border-white/10 bg-[#041C2C]/98 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.6)] overflow-hidden z-50 max-h-52 overflow-y-auto"
+            style={dropdownStyle}
+            className="rounded-2xl border border-white/15 bg-[#041C2C] shadow-[0_8px_40px_rgba(0,0,0,0.8)] overflow-hidden max-h-52 overflow-y-auto"
           >
             {suggestions.length === 0 && loading && (
               <div className="px-4 py-3 text-xs opacity-40 text-center">Searching cities...</div>
             )}
             {suggestions.map((s, idx) => (
-              <motion.button
+              <button
                 key={idx}
-                whileHover={{ backgroundColor: "rgba(245,158,11,0.08)" }}
-                onClick={() => handleSelect(s)}
-                className="w-full text-left px-4 py-2.5 flex items-center gap-2.5 border-b border-white/5 last:border-0 transition-colors"
+                onMouseDown={(e) => { e.preventDefault(); handleSelect(s); }}
+                className="w-full text-left px-4 py-2.5 flex items-center gap-2.5 border-b border-white/5 last:border-0 hover:bg-amber-400/8 transition-colors"
               >
                 <MapPin size={11} className="text-amber-400/50 flex-shrink-0" />
                 <div>
@@ -157,11 +173,12 @@ function CityAutocomplete({ onSelect }) {
                     </span>
                   )}
                 </div>
-              </motion.button>
+              </button>
             ))}
           </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }
@@ -181,14 +198,11 @@ export default function PrayerTimesWidget() {
   const timersRef = useRef([]);
 
   const fetchByGPS = useCallback(async (lat, lng) => {
-    setLoading(true);
-    setError(null);
+    setLoading(true); setError(null);
     try {
       const date = new Date();
       const d = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
-      const res = await fetch(
-        `https://api.aladhan.com/v1/timings/${d}?latitude=${lat}&longitude=${lng}&method=2`
-      );
+      const res = await fetch(`https://api.aladhan.com/v1/timings/${d}?latitude=${lat}&longitude=${lng}&method=2`);
       const data = await res.json();
       if (data.code === 200) {
         const t = data.data.timings;
@@ -196,26 +210,18 @@ export default function PrayerTimesWidget() {
         const tz = data.data.meta.timezone || "Your Location";
         setCity(tz);
         localStorage.setItem("prayerCity", tz);
-      } else {
-        setError("Could not load prayer times.");
-      }
-    } catch {
-      setError("Network error. Check connection.");
-    } finally {
-      setLoading(false);
-    }
+      } else { setError("Could not load prayer times."); }
+    } catch { setError("Network error. Check connection."); }
+    finally { setLoading(false); }
   }, []);
 
   const fetchByCity = useCallback(async (cityName) => {
     if (!cityName?.trim()) return;
-    setLoading(true);
-    setError(null);
+    setLoading(true); setError(null);
     try {
       const date = new Date();
       const d = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
-      const res = await fetch(
-        `https://api.aladhan.com/v1/timingsByCity/${d}?city=${encodeURIComponent(cityName)}&country=&method=2`
-      );
+      const res = await fetch(`https://api.aladhan.com/v1/timingsByCity/${d}?city=${encodeURIComponent(cityName)}&country=&method=2`);
       const data = await res.json();
       if (data.code === 200) {
         const t = data.data.timings;
@@ -223,14 +229,9 @@ export default function PrayerTimesWidget() {
         setCity(cityName);
         localStorage.setItem("prayerCity", cityName);
         localStorage.setItem("prayerLocationMode", "city");
-      } else {
-        setError("City not found. Try another name.");
-      }
-    } catch {
-      setError("Network error. Check connection.");
-    } finally {
-      setLoading(false);
-    }
+      } else { setError("City not found. Try another."); }
+    } catch { setError("Network error. Check connection."); }
+    finally { setLoading(false); }
   }, []);
 
   const detectGPS = useCallback(() => {
@@ -247,7 +248,6 @@ export default function PrayerTimesWidget() {
     else if (city) fetchByCity(city);
   }, []);
 
-  // Schedule notifications
   const scheduleNotifications = useCallback(() => {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
@@ -280,10 +280,7 @@ export default function PrayerTimesWidget() {
     if (!("Notification" in window)) return;
     const result = await Notification.requestPermission();
     setNotifPermission(result);
-    if (result === "granted") {
-      setNotifEnabled(true);
-      localStorage.setItem("prayerNotif", "true");
-    }
+    if (result === "granted") { setNotifEnabled(true); localStorage.setItem("prayerNotif", "true"); }
   };
 
   const toggleNotif = async () => {
@@ -324,7 +321,7 @@ export default function PrayerTimesWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            className="mb-3 w-76 rounded-3xl border border-white/10 bg-[#041C2C]/95 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-visible"
+            className="mb-3 w-72 rounded-3xl border border-white/10 bg-[#041C2C]/95 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
           >
             {/* Header */}
             <div className="px-5 py-4 border-b border-white/8 flex items-center justify-between">
@@ -347,7 +344,7 @@ export default function PrayerTimesWidget() {
               </div>
             </div>
 
-            {/* Settings Panel */}
+            {/* Settings Panel — overflow visible so portal dropdown isn't clipped */}
             <AnimatePresence>
               {showSettings && (
                 <motion.div
@@ -355,18 +352,15 @@ export default function PrayerTimesWidget() {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="overflow-visible border-b border-white/8"
+                  className="border-b border-white/8"
+                  style={{ overflow: "visible" }}
                 >
                   <div className="p-4 space-y-4">
-                    {/* Location */}
                     <div>
                       <p className="text-xs opacity-40 uppercase tracking-wider mb-2">Location</p>
                       <div className="space-y-2">
-                        <motion.button
-                          whileTap={{ scale: 0.97 }}
-                          onClick={handleGPSDetect}
-                          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-400/20 bg-amber-400/8 text-amber-400 text-xs font-medium"
-                        >
+                        <motion.button whileTap={{ scale: 0.97 }} onClick={handleGPSDetect}
+                          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-400/20 bg-amber-400/8 text-amber-400 text-xs font-medium">
                           <Navigation size={12} />
                           Use my GPS location
                         </motion.button>
@@ -374,7 +368,6 @@ export default function PrayerTimesWidget() {
                       </div>
                     </div>
 
-                    {/* Notifications */}
                     <div>
                       <p className="text-xs opacity-40 uppercase tracking-wider mb-2">Notifications</p>
                       <div className="flex items-center justify-between mb-3">
@@ -383,9 +376,7 @@ export default function PrayerTimesWidget() {
                             ? notifEnabled ? "Alerts enabled" : "Alerts disabled"
                             : "Tap to enable alerts"}
                         </span>
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={toggleNotif}
+                        <motion.button whileTap={{ scale: 0.95 }} onClick={toggleNotif}
                           className={`w-10 h-5 rounded-full border relative transition-all ${
                             notifEnabled && notifPermission === "granted"
                               ? "bg-amber-400/30 border-amber-400/50"
@@ -404,10 +395,7 @@ export default function PrayerTimesWidget() {
                       <p className="text-xs opacity-40 mb-2">Notify before prayer:</p>
                       <div className="flex gap-2">
                         {[5, 10, 15, 20].map((m) => (
-                          <motion.button
-                            key={m}
-                            whileTap={{ scale: 0.93 }}
-                            onClick={() => handleMinutesChange(m)}
+                          <motion.button key={m} whileTap={{ scale: 0.93 }} onClick={() => handleMinutesChange(m)}
                             className={`flex-1 py-1.5 rounded-xl text-xs font-medium border transition-all ${
                               notifMinutes === m
                                 ? "border-amber-400/50 bg-amber-400/15 text-amber-400"
@@ -516,8 +504,7 @@ export default function PrayerTimesWidget() {
 
       {/* Floating Button */}
       <motion.button
-        whileHover={{ scale: 1.06 }}
-        whileTap={{ scale: 0.94 }}
+        whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
         onClick={() => setOpen(!open)}
         className={`relative flex items-center gap-2.5 px-4 py-3 rounded-2xl border shadow-[0_8px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all ${
           open
