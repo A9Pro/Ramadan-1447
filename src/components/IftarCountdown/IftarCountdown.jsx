@@ -12,7 +12,9 @@ function getCountdown(times) {
   const now = new Date();
 
   const parseTime = (t) => {
-    const [h, m] = t.split(":").map(Number);
+    // Strip any trailing " (BST)" or timezone labels — API sometimes adds them
+    const clean = t.split(" ")[0];
+    const [h, m] = clean.split(":").map(Number);
     const d = new Date();
     d.setHours(h, m, 0, 0);
     return d;
@@ -21,23 +23,16 @@ function getCountdown(times) {
   const fajr = parseTime(times.Fajr);
   const maghrib = parseTime(times.Maghrib);
 
-  // Before Fajr → countdown to Suhoor end (Fajr)
   if (now < fajr) {
-    const diff = fajr - now;
-    return { label: "Suhoor ends in", type: "suhoor", diff };
+    return { label: "Suhoor ends in", type: "suhoor", diff: fajr - now };
   }
-
-  // Between Fajr and Maghrib → fasting, countdown to Iftar
   if (now >= fajr && now < maghrib) {
-    const diff = maghrib - now;
-    return { label: "Iftar in", type: "iftar", diff };
+    return { label: "Iftar in", type: "iftar", diff: maghrib - now };
   }
-
-  // After Maghrib → Iftar passed, countdown to tomorrow's Fajr
+  // After Maghrib — countdown to tomorrow Fajr
   const tomorrowFajr = new Date(fajr);
   tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
-  const diff = tomorrowFajr - now;
-  return { label: "Suhoor ends in", type: "suhoor", diff };
+  return { label: "Suhoor ends in", type: "suhoor", diff: tomorrowFajr - now };
 }
 
 function formatDiff(diff) {
@@ -49,29 +44,29 @@ function formatDiff(diff) {
 }
 
 export default function IftarCountdown({ times }) {
-  const [countdown, setCountdown] = useState(null);
+  const [countdown, setCountdown] = useState(() => getCountdown(times));
   const [tick, setTick] = useState(0);
 
+  // Tick every second
   useEffect(() => {
     const interval = setInterval(() => setTick((t) => t + 1), 1000);
     return () => clearInterval(interval);
   }, []);
 
+  // Recalculate whenever times arrive OR every second
   useEffect(() => {
     setCountdown(getCountdown(times));
   }, [times, tick]);
 
-  if (!countdown) return null;
-
-  const { h, m, s } = formatDiff(countdown.diff);
-  const isIftar = countdown.type === "iftar";
+  const isIftar = countdown?.type === "iftar";
+  const { h, m, s } = countdown ? formatDiff(countdown.diff) : { h: 0, m: 0, s: 0 };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`relative overflow-hidden rounded-3xl border p-8 mb-8 ${
+      className={`relative overflow-hidden rounded-3xl border p-6 md:p-8 mb-8 ${
         isIftar
           ? "border-amber-400/20 bg-gradient-to-br from-amber-400/8 via-transparent to-transparent"
           : "border-blue-400/20 bg-gradient-to-br from-blue-400/8 via-transparent to-transparent"
@@ -83,61 +78,88 @@ export default function IftarCountdown({ times }) {
       }`} />
 
       {/* Label */}
-      <div className="relative z-10 text-center mb-6">
+      <div className="relative z-10 text-center mb-5">
         <p className={`text-xs uppercase tracking-widest mb-1 ${isIftar ? "text-amber-400/60" : "text-blue-400/60"}`}>
           {isIftar ? "🌙 Ramadan Fast" : "⭐ Night Fast"}
         </p>
-        <p className={`text-lg font-medium ${isIftar ? "text-amber-400" : "text-blue-300"}`}>
-          {countdown.label}
-        </p>
+        {countdown ? (
+          <p className={`text-base md:text-lg font-medium ${isIftar ? "text-amber-400" : "text-blue-300"}`}>
+            {countdown.label}
+          </p>
+        ) : (
+          <p className="text-sm opacity-30">Loading prayer times...</p>
+        )}
       </div>
 
-      {/* Big countdown digits */}
-      <div className="relative z-10 flex items-center justify-center gap-3">
-        {[
-          { value: h, label: "Hours" },
-          { value: m, label: "Minutes" },
-          { value: s, label: "Seconds" },
-        ].map(({ value, label }, idx) => (
-          <div key={label} className="flex items-center gap-3">
-            <div className="text-center">
-              <AnimatePresence mode="popLayout">
+      {/* Countdown digits */}
+      {countdown ? (
+        <div className="relative z-10 flex items-center justify-center gap-2 md:gap-3">
+          {[
+            { value: h, label: "Hours" },
+            { value: m, label: "Minutes" },
+            { value: s, label: "Seconds" },
+          ].map(({ value, label }, idx) => (
+            <div key={label} className="flex items-center gap-2 md:gap-3">
+              <div className="text-center min-w-[56px] md:min-w-[72px]">
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    key={value}
+                    initial={{ y: -8, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 8, opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                    className={`text-4xl md:text-5xl lg:text-6xl font-bold tabular-nums tracking-tight ${
+                      isIftar ? "text-amber-400" : "text-blue-300"
+                    }`}
+                  >
+                    {pad(value)}
+                  </motion.div>
+                </AnimatePresence>
+                <p className="text-[9px] md:text-xs opacity-30 mt-1 uppercase tracking-widest">{label}</p>
+              </div>
+              {idx < 2 && (
+                <motion.span
+                  animate={{ opacity: [1, 0.2, 1] }}
+                  transition={{ repeat: Infinity, duration: 1 }}
+                  className={`text-2xl md:text-3xl font-light pb-4 ${isIftar ? "text-amber-400/40" : "text-blue-400/40"}`}
+                >
+                  :
+                </motion.span>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* Skeleton while prayer times are loading */
+        <div className="relative z-10 flex items-center justify-center gap-3">
+          {["Hours", "Minutes", "Seconds"].map((label, idx) => (
+            <div key={label} className="flex items-center gap-3">
+              <div className="text-center min-w-[56px]">
                 <motion.div
-                  key={value}
-                  initial={{ y: -10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 10, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={`text-5xl lg:text-6xl font-bold tabular-nums tracking-tight ${
-                    isIftar ? "text-amber-400" : "text-blue-300"
+                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ repeat: Infinity, duration: 1.5, delay: idx * 0.2 }}
+                  className={`text-4xl md:text-5xl font-bold tabular-nums ${
+                    isIftar ? "text-amber-400/30" : "text-blue-300/30"
                   }`}
                 >
-                  {pad(value)}
+                  --
                 </motion.div>
-              </AnimatePresence>
-              <p className="text-xs opacity-30 mt-1 uppercase tracking-widest">{label}</p>
+                <p className="text-[9px] md:text-xs opacity-20 mt-1 uppercase tracking-widest">{label}</p>
+              </div>
+              {idx < 2 && <span className="text-2xl opacity-20 pb-4">:</span>}
             </div>
-            {idx < 2 && (
-              <motion.span
-                animate={{ opacity: [1, 0.2, 1] }}
-                transition={{ repeat: Infinity, duration: 1 }}
-                className={`text-3xl font-light mb-4 ${isIftar ? "text-amber-400/40" : "text-blue-400/40"}`}
-              >
-                :
-              </motion.span>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Dua */}
-      <div className="relative z-10 text-center mt-6">
+      <div className="relative z-10 text-center mt-5">
         {isIftar ? (
-          <p className="text-xs opacity-30 italic">
+          <p className="text-[10px] md:text-xs opacity-30 italic px-2">
             "O Allah, I fasted for You and I believe in You and I break my fast with Your provision"
           </p>
         ) : (
-          <p className="text-xs opacity-30 italic">
+          <p className="text-[10px] md:text-xs opacity-30 italic px-2">
             "Eat and drink until the white thread becomes distinct from the black thread at dawn" — Quran 2:187
           </p>
         )}
