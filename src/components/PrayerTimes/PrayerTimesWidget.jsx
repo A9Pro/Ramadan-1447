@@ -320,15 +320,16 @@ export default function PrayerTimesWidget({ onTimesLoaded }) {
   const nextPrayer = getNextPrayer(times);
 
   return (
-    <div className="fixed bottom-6 left-6 z-50">
+    <div className="fixed top-6 left-6 z-50">
+      {/* Panel drops DOWN from the button */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 16, scale: 0.95 }}
+            initial={{ opacity: 0, y: -12, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.95 }}
+            exit={{ opacity: 0, y: -12, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            className="mb-3 w-72 rounded-3xl border border-white/10 bg-[#041C2C]/95 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
+            className="mt-3 w-72 rounded-3xl border border-white/10 bg-[#041C2C]/95 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
           >
             {/* Header */}
             <div className="px-5 py-4 border-b border-white/8 flex items-center justify-between">

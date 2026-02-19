@@ -16,6 +16,7 @@ import CommunityPrayerBoard from "./components/Community/CommunityPrayerBoard";
 import PrayerTimesWidget from "./components/PrayerTimes/PrayerTimesWidget";
 import IftarCountdown from "./components/IftarCountdown/IftarCountdown";
 import MobileNav from "./components/MobileNav/MobileNav";
+import TasbihWidget from "./components/TasbihWidget/TasbihWidget";
 
 const PAGES = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
@@ -257,8 +258,11 @@ export default function App() {
         Made with intention & du'a for the Ummah 🤲
       </footer>
 
-      {/* Floating Prayer Times Widget — also shares times up for IftarCountdown */}
+      {/* Floating Prayer Times Widget */}
       <PrayerTimesWidget onTimesLoaded={setPrayerTimes} />
+
+      {/* Floating Tasbih Counter */}
+      <TasbihWidget />
 
       {/* Mobile Bottom Nav */}
       <MobileNav activeSection={mobileSection} onNavigate={handleMobileNavigate} />
