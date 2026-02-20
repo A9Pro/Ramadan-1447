@@ -24,13 +24,14 @@ const PAGES = [
   { id: "community", label: "Community", icon: Users },
 ];
 
-// Section IDs for mobile nav scroll
+// Section IDs for mobile nav scroll-to
 const SECTION_IDS = {
-  dhikr: "section-dhikr",
-  prayer: "section-prayer",
-  quran: "section-quran",
-  sunnah: "section-sunnah",
-  community: "section-community",
+  dhikr:       "section-dhikr",
+  prayer:      "section-prayer",
+  quran:       "section-quran",
+  sunnah:      "section-sunnah",
+  recitations: "section-recitations",
+  community:   "section-community",
 };
 
 function getRamadanDay() {
@@ -48,7 +49,7 @@ export default function App() {
   });
   const [page, setPage] = useState("home");
   const [mobileSection, setMobileSection] = useState("dhikr");
-  const [prayerTimes, setPrayerTimes] = useState(null); // shared from widget
+  const [prayerTimes, setPrayerTimes] = useState(null);
   const isDark = theme === "dark";
   const ramadanDay = getRamadanDay();
 
@@ -61,6 +62,8 @@ export default function App() {
 
   const handleMobileNavigate = (sectionId) => {
     setMobileSection(sectionId);
+
+    // Full-page switches
     if (sectionId === "community") {
       setPage("community");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -71,6 +74,8 @@ export default function App() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+
+    // Everything else → home, scroll to section
     setPage("home");
     setTimeout(() => {
       const el = document.getElementById(SECTION_IDS[sectionId]);
@@ -138,7 +143,8 @@ export default function App() {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-14 pb-24 md:pb-14">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-14 pb-28 md:pb-14">
+
         {/* Hero */}
         <motion.header
           initial={{ opacity: 0, y: -16 }}
@@ -166,7 +172,11 @@ export default function App() {
           </h1>
 
           <p className="mt-5 text-xl opacity-40">
-            {page === "home" ? "Sunnah-Focused Daily Companion" : page === "ramadan" ? "Al Qunūt · Duas · Iftar — Ramadan 1447" : "Ummah Prayer Board — support & du'a together"}
+            {page === "home"
+              ? "Sunnah-Focused Daily Companion"
+              : page === "ramadan"
+              ? "Al Qunūt · Duas · Iftar — Ramadan 1447"
+              : "Ummah Prayer Board — support & du'a together"}
           </p>
         </motion.header>
 
@@ -177,7 +187,7 @@ export default function App() {
           <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-400/20 to-transparent" />
         </div>
 
-        {/* Iftar Countdown — always visible on home */}
+        {/* Iftar Countdown — home only */}
         {page === "home" && (
           <Reveal>
             <IftarCountdown times={prayerTimes} />
@@ -186,7 +196,7 @@ export default function App() {
 
         {/* Pages */}
         <AnimatePresence mode="wait">
-            {page === "home" ? (
+          {page === "home" ? (
             <motion.div
               key="home"
               initial={{ opacity: 0, y: 20 }}
@@ -195,7 +205,8 @@ export default function App() {
               transition={{ duration: 0.35 }}
             >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Left */}
+
+                {/* Left column */}
                 <div className="lg:col-span-8 space-y-10">
                   <Reveal>
                     <div id={SECTION_IDS.dhikr}>
@@ -223,7 +234,7 @@ export default function App() {
                   </Reveal>
                 </div>
 
-                {/* Right Sidebar */}
+                {/* Right sidebar */}
                 <div className="lg:col-span-4 space-y-10 lg:sticky lg:top-10">
                   <Reveal>
                     <div id={SECTION_IDS.quran} className={sideCardClass}>
@@ -231,8 +242,9 @@ export default function App() {
                     </div>
                   </Reveal>
 
+                  {/* SideRecitationsPanel gets its own anchor for mobile nav */}
                   <Reveal>
-                    <div className={sideCardClass}>
+                    <div id={SECTION_IDS.recitations} className={sideCardClass}>
                       <SideRecitationsPanel />
                     </div>
                   </Reveal>
@@ -245,6 +257,7 @@ export default function App() {
                 </div>
               </div>
             </motion.div>
+
           ) : page === "ramadan" ? (
             <motion.div
               key="ramadan"
@@ -255,6 +268,7 @@ export default function App() {
             >
               <RamadanPanel />
             </motion.div>
+
           ) : (
             <motion.div
               key="community"
@@ -274,10 +288,8 @@ export default function App() {
         Made with intention & du'a for the Ummah 🤲
       </footer>
 
-      {/* Floating Prayer Times Widget */}
+      {/* Floating widgets */}
       <PrayerTimesWidget onTimesLoaded={setPrayerTimes} />
-
-      {/* Floating Tasbih Counter */}
       <TasbihWidget />
 
       {/* Mobile Bottom Nav */}
