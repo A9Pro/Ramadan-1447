@@ -17,6 +17,7 @@ import PrayerTimesWidget from "./components/PrayerTimes/PrayerTimesWidget";
 import IftarCountdown from "./components/IftarCountdown/IftarCountdown";
 import MobileNav from "./components/MobileNav/MobileNav";
 import TasbihWidget from "./components/TasbihWidget/TasbihWidget";
+import RamadanPanel from "./components/Ramadan/RamadanPanel";
 
 const PAGES = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
@@ -62,6 +63,11 @@ export default function App() {
     setMobileSection(sectionId);
     if (sectionId === "community") {
       setPage("community");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (sectionId === "ramadan") {
+      setPage("ramadan");
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
@@ -160,7 +166,7 @@ export default function App() {
           </h1>
 
           <p className="mt-5 text-xl opacity-40">
-            {page === "home" ? "Sunnah-Focused Daily Companion" : "Ummah Prayer Board — support & du'a together"}
+            {page === "home" ? "Sunnah-Focused Daily Companion" : page === "ramadan" ? "Al Qunūt · Duas · Iftar — Ramadan 1447" : "Ummah Prayer Board — support & du'a together"}
           </p>
         </motion.header>
 
@@ -180,7 +186,7 @@ export default function App() {
 
         {/* Pages */}
         <AnimatePresence mode="wait">
-          {page === "home" ? (
+            {page === "home" ? (
             <motion.div
               key="home"
               initial={{ opacity: 0, y: 20 }}
@@ -238,6 +244,16 @@ export default function App() {
                   </Reveal>
                 </div>
               </div>
+            </motion.div>
+          ) : page === "ramadan" ? (
+            <motion.div
+              key="ramadan"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.35 }}
+            >
+              <RamadanPanel />
             </motion.div>
           ) : (
             <motion.div
